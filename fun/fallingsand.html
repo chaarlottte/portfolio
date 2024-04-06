@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Falling Sand Simulator - chaarlottte.dev</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.js"></script>
+</head>
+<body>
+    <main></main>
+    <script>
+        let grid;
+        let cols, rows;
+        let cellSize = 10;
+
+        let hue = 0;
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight);
+            cols = floor(width / cellSize);
+            rows = floor(height / cellSize);
+            grid = createEmptyGrid(cols, rows);
+        }
+
+        function draw() {
+            background(255);
+            updateGrid();
+            displayGrid();
+        }
+
+        function createEmptyGrid(cols, rows) {
+            let grid = new Array(cols);
+            for(let i = 0; i < cols; i++) {
+                grid[i] = new Array(rows).fill(0);
+            }
+            return grid;
+        }
+
+        function updateGrid() {
+            for(let j = rows - 2; j >= 0; j--) {
+                for(let i = 0; i < cols; i++) {
+                    if(grid[i][j] === 0) continue;
+
+                    if(grid[i][j + 1] === 0) {
+                        grid[i][j + 1] = grid[i][j];
+                        grid[i][j] = 0;
+                    } else {
+                        if(i > 0 && grid[i - 1][j + 1] === 0 && random(1) < 0.5) {
+                            grid[i - 1][j + 1] = grid[i][j];
+                            grid[i][j] = 0;
+                        } else if(i < cols - 1 && grid[i + 1][j + 1] === 0 && random(1) < 0.5) {
+                            grid[i + 1][j + 1] = grid[i][j];
+                            grid[i][j] = 0;
+                        } else {
+                            if(i === 0) {
+                                grid[cols - 1][j + 1] = grid[i][j];
+                                grid[i][j] = 0;
+                            } else if(i === cols - 1) {
+                                grid[0][j + 1] = grid[i][j];
+                                grid[i][j] = 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function displayGrid() {
+            for(let i = 0; i < cols; i++) {
+                for(let j = 0; j < rows; j++) {
+                    if(grid[i][j] === 0) continue;
+                    colorMode(HSB);
+                    fill(grid[i][j], 50, 100); 
+                    noStroke(); 
+                    rect(i * cellSize, j * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        function spawnSands() {
+            let radius = 1;
+            for(let offsetX = -radius; offsetX <= radius; offsetX++) {
+                for(let offsetY = -radius; offsetY <= radius; offsetY++) {
+                    let i = floor((mouseX + offsetX * cellSize) / cellSize);
+                    let j = floor((mouseY + offsetY * cellSize) / cellSize);
+                    if(i >= 0 && i < cols && j >= 0 && j < rows && random(1) > 0.75) {
+                        grid[i][j] = hue;
+                    }
+                }
+            }
+            hue += 0.5;
+            if(hue >= 360) {
+                hue = 0;
+            }
+        }
+
+
+        function mouseDragged() {
+            spawnSands();
+        }
+    </script>
+</body>
+</html>
