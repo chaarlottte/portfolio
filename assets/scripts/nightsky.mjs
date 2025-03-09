@@ -79,7 +79,7 @@ function degreesToRads(degrees) {
 }
 
 function createShootingStar() {
-    let shootingStar = new Particle(randomRange(0, width / 2), 0, 0, 0);
+    let shootingStar = new Particle(randomRange(0, width), 0, 0, 0);
     shootingStar.setSpeed(randomRange(shootingStarSpeed.min, shootingStarSpeed.max));
     shootingStar.setHeading(degreesToRads(starsAngle));
     shootingStar.radius = shootingStarRadius;
